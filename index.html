@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bison Business</title>
+    <style>
+        /* Общие стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background-color: #34495e; /* Цвет фона заголовка */
+            color: #fff;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 0.5em;
+        }
+
+        /* Вкладки */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .tab-button {
+            background-color: #34495e; /* Цвет фона вкладки такой же, как у заголовка */
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            border-radius: 4px 4px 0 0;
+            margin: 0 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .tab-button.active, .tab-button:hover {
+            background-color: #2980b9; /* Более темный оттенок для активной вкладки */
+        }
+
+        /* Карточки */
+        .card {
+            display: none;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .card.active {
+            display: block;
+        }
+
+        h2 {
+            color: #34495e;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        /* Кнопки */
+        .btn {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* Ввод текста */
+        .input-group {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px 0 0 4px;
+            outline: none;
+        }
+
+        .list {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .list li {
+            padding: 10px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: gray;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            font-size: 18px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            color: #c0392b;
+        }
+
+        footer {
+            margin-top: 20px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        /* Финансы */
+        .finance-info {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            font-size: 1.1em;
+            color: #34495e;
+            border-top: 1px solid #ccc;
+            margin-top: 15px;
+        }
+
+        .income {
+            color: #2ecc71;
+        }
+
+        .expense {
+            color: #e74c3c;
+        }
+
+        /* Дата */
+        .date {
+            font-size: 1.2em;
+            color: #34495e;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Bison Business</h1>
+        <p>Планируйте, отслеживайте финансы и отмечайте цели.</p>
+    </header>
+
+    <!-- Отображение текущей даты -->
+    <div class="date" id="current-date"></div>
+
+    <div class="tabs">
+        <button class="tab-button active" onclick="openTab('tasks')">Задачи</button>
+        <button class="tab-button" onclick="openTab('goals')">Цели</button>
+        <button class="tab-button" onclick="openTab('finance')">Финансы</button>
+        <button class="tab-button" onclick="openTab('notes')">Заметки</button>
+    </div>
+
+    <section id="tasks" class="card active">
+        <h2>Ежедневные задачи</h2>
+        <ul id="task-list" class="list"></ul>
+        <div class="input-group">
+            <input type="text" id="new-task" placeholder="Добавить новую задачу">
+            <button class="btn" onclick="addTask()">+</button>
+        </div>
+    </section>
+
+    <section id="goals" class="card">
+        <h2>Долгосрочные цели</h2>
+        <ul id="goal-list" class="list"></ul>
+        <div class="input-group">
+            <input type="text" id="new-goal" placeholder="Добавить новую цель">
+            <button class="btn" onclick="addGoal()">+</button>
+        </div>
+    </section>
+
+    <section id="finance" class="card">
+        <h2>Финансы</h2>
+        <ul id="finance-list" class="list"></ul>
+        <div class="input-group">
+            <input type="text" id="finance-description" placeholder="Описание">
+            <input type="number" id="finance-amount" placeholder="Сумма">
+            <button class="btn" onclick="addFinance()">+</button>
+        </div>
+        <div class="finance-info">
+            <span class="income">Доходы: <span id="total-income">0</span> тг</span>
+            <span class="expense">Расходы: <span id="total-expense">0</span> тг</span>
+        </div>
+    </section>
+
+    <section id="notes" class="card">
+        <h2>Заметки</h2>
+        <ul id="note-list" class="list"></ul>
+        <div class="input-group">
+            <textarea id="new-note" placeholder="Добавить заметку"></textarea>
+            <button class="btn" onclick="addNote()">+</button>
+        </div>
+    </section>
+
+    <footer>
+        <p>© Bison Business</p>
+    </footer>
+
+    <script>
+        function openTab(tabName) {
+            const tabs = document.querySelectorAll('.card');
+            const buttons = document.querySelectorAll('.tab-button');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        let totalIncome = 0;
+        let totalExpense = 0;
+
+        // Функция для получения текущей даты
+        function getCurrentDate() {
+            const date = new Date();
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}.${month}.${year}`;
+        }
+
+        // Отображаем текущую дату
+        document.getElementById('current-date').textContent = `Сегодня: ${getCurrentDate()}`;
+
+        // Сохранение и восстановление данных из localStorage
+        function saveData() {
+            localStorage.setItem('tasks', JSON.stringify([...document.querySelectorAll('#task-list li')].map(li => ({ text: li.textContent, completed: li.classList.contains('completed') }))));
+            localStorage.setItem('goals', JSON.stringify([...document.querySelectorAll('#goal-list li')].map(li => ({ text: li.textContent, completed: li.classList.contains('completed') }))));
+            localStorage.setItem('finance', JSON.stringify([...document.querySelectorAll('#finance-list li')].map(li => li.textContent)));
+            localStorage.setItem('notes', JSON.stringify([...document.querySelectorAll('#note-list li')].map(li => li.textContent)));
+            localStorage.setItem('income', totalIncome);
+            localStorage.setItem('expense', totalExpense);
+        }
+
+        function loadData() {
+            const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            const goals = JSON.parse(localStorage.getItem('goals') || '[]');
+            const finances = JSON.parse(localStorage.getItem('finance') || '[]');
+            const notes = JSON.parse(localStorage.getItem('notes') || '[]');
+
+            tasks.forEach(task => addListItem('task-list', task.text, task.completed));
+            goals.forEach(goal => addListItem('goal-list', goal.text, goal.completed));
+            finances.forEach(finance => addListItem('finance-list', finance));
+            notes.forEach(note => addListItem('note-list', note));
+
+            totalIncome = parseFloat(localStorage.getItem('income') || '0');
+            totalExpense = parseFloat(localStorage.getItem('expense') || '0');
+
+            document.getElementById('total-income').textContent = totalIncome.toFixed(2);
+            document.getElementById('total-expense').textContent = totalExpense.toFixed(2);
+        }
+
+        function addListItem(listId, text, completed = false) {
+            const list = document.getElementById(listId);
+            const li = document.createElement('li');
+            li.textContent = text;
+            if (completed) li.classList.add('completed');
+
+            // Добавляем кнопку удаления
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = '✖';
+            deleteBtn.classList.add('delete-btn');
+            deleteBtn.onclick = () => {
+                li.remove();
+                saveData();
+            };
+
+            li.appendChild(deleteBtn);
+            li.onclick = () => toggleCompletion(li);
+            list.appendChild(li);
+        }
+
+        function toggleCompletion(li) {
+            li.classList.toggle('completed');
+            saveData();
+        }
+
+        function addTask() {
+            const taskInput = document.getElementById('new-task');
+            const taskText = taskInput.value.trim();
+            if (taskText) {
+                addListItem('task-list', taskText);
+                taskInput.value = '';
+                saveData();
+            }
+        }
+
+        function addGoal() {
+            const goalInput = document.getElementById('new-goal');
+            const goalText = goalInput.value.trim();
+            if (goalText) {
+                addListItem('goal-list', goalText);
+                goalInput.value = '';
+                saveData();
+            }
+        }
+
+        function addFinance() {
+            const financeDescription = document.getElementById('finance-description');
+            const financeAmount = document.getElementById('finance-amount');
+            const description = financeDescription.value.trim();
+            const amount = parseFloat(financeAmount.value.trim());
+
+            if (description && !isNaN(amount)) {
+                const financeItem = `${description}: ${amount} тг`;
+                addListItem('finance-list', financeItem);
+
+                if (amount >= 0) {
+                    totalIncome += amount;
+                } else {
+                    totalExpense += Math.abs(amount);
+                }
+
+                document.getElementById('total-income').textContent = totalIncome.toFixed(2);
+                document.getElementById('total-expense').textContent = totalExpense.toFixed(2);
+
+                financeDescription.value = '';
+                financeAmount.value = '';
+                saveData();
+            }
+        }
+
+        function addNote() {
+            const noteInput = document.getElementById('new-note');
+            const noteText = noteInput.value.trim();
+            if (noteText) {
+                addListItem('note-list', noteText);
+                noteInput.value = '';
+                saveData();
+            }
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>
